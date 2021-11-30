@@ -21,8 +21,6 @@ create table Vacations (
 	status_vacation BIT
 )
 
-insert into Vacations values ('0','10/12/2021','10/10/2000',0)
-
 create table Payroll ( 
 	id int identity primary key not null,
 	id_employee int foreign key references Employee(id),
@@ -108,12 +106,12 @@ after delete
 as
 
   begin
-
+select
   delete from Employee where id in (select id from deleted) 
 
   delete from Vacations where id in (select id from deleted)
 
-  delete from Payroll where id in (select id from deleted)
+  delete from Payroll where id in ( id from deleted)
 
   end
 
@@ -129,9 +127,18 @@ select * from Payroll
 
 insert into Employee values('Juan','0','01/01/2000','programador','00100100001','juan@gmail.com','01/01/2020')
 insert into Employee values('Pedro','2','01/01/2001','frontend','00112333','pedro@gmail.com','01/01/2020')
+insert into Vacations values ('0','10/12/2021','10/10/2000',0)
 
-
------------------------- delete -----------------------
+------------------------ deletes -----------------------
 
 delete from Employee where id = 6
 delete from job_history 
+
+
+
+------------ drops -----------
+drop table Employee
+drop table Vacations
+drop table Payroll
+drop table job_history
+drop table admins
