@@ -3,7 +3,7 @@ create database Employee_ITLA_DB
 use Employee_ITLA_DB
 
 create table Employee(
-	id int primary key identity not null,
+	id int primary key identity (1,1) not null,
 	name_employee varchar(60),
 	identification_card varchar(50) unique not null,
 	date_of_birth date,
@@ -14,7 +14,7 @@ create table Employee(
 )
 
 create table Vacations (
-	id_Vacations int primary key identity not null,
+	id_Vacations int primary key identity (1,1) not null,
 	identification_card varchar(50) unique not null,
 	from_vacations date,
 	to_vacations date,
@@ -22,7 +22,7 @@ create table Vacations (
 )
 
 create table Payroll ( 
-	id int identity primary key not null,
+	id int identity (1,1) primary key not null,
 	id_employee int foreign key references Employee(id),
 	date_payroll date default getDate(),
 	AFP decimal,
@@ -32,7 +32,7 @@ create table Payroll (
 
 
 create table job_history(
-	id_job_history int identity,
+	id_job_history int identity (1,1) primary key,
 	id_employee int,
 	entry_date date,
 	end_date date,
@@ -43,7 +43,8 @@ create table job_history(
 
 
 create table admins (
-	users varchar(50),
+	id_admin int identity (1,1) primary key,
+	users varchar (50),
 	pass varchar(25)
 )
 
@@ -70,6 +71,15 @@ end
 -- store procedure Payroll descuentos
 
 
+-- trigger Payrroll
+create trigger add_To_Payroll
+on Employee 
+for insert
+as
+	INSERT INTO Payroll
+        (id_employee, entry_date,name_employee, identification_card, role_employee )
+    SELECT id,hire_date, name_employee, identification_card, role_employee FROM inserted
+--------------------------------------------------------------------------------------------------------
 
 -- trigger job history cuando se cree empleado agregue los datos al job_history menos el end_date).
 create trigger add_To_jobHistory_When
@@ -106,12 +116,10 @@ after delete
 as
 
   begin
-select
-  delete from Employee where id in (select id from deleted) 
 
-  delete from Vacations where id in (select id from deleted)
+  delete from Vacations where identification_card in (select identification_card from deleted)
 
-  delete from Payroll where id in ( id from deleted)
+  delete from Payroll where id_employee in (select id from deleted)
 
   end
 
@@ -127,6 +135,10 @@ select * from Payroll
 
 insert into Employee values('Juan','0','01/01/2000','programador','00100100001','juan@gmail.com','01/01/2020')
 insert into Employee values('Pedro','2','01/01/2001','frontend','00112333','pedro@gmail.com','01/01/2020')
+
+insert into Employee values('Isidro','3','01/01/2000','programador','00100100001','juan@gmail.com','01/01/2020')
+insert into Employee values('Pedro','4','01/01/2001','frontend','00112333','pedro@gmail.com','01/01/2020')
+
 insert into Vacations values ('0','10/12/2021','10/10/2000',0)
 
 ------------------------ deletes -----------------------
@@ -142,3 +154,10 @@ drop table Vacations
 drop table Payroll
 drop table job_history
 drop table admins
+
+
+------------ drop triggers-----------
+drop trigger add_To_jobHistory_When;
+
+------------- delete-------------
+delete from Employee where identification_card = '3'
