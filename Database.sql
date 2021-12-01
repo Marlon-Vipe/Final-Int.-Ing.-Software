@@ -10,9 +10,10 @@ create table Employee(
 	role_employee varchar(50),
 	phone_number varchar(50),
 	email varchar(50),
-	hire_date date
+	hire_date date,
+	salary decimal
 )
-
+go
 create table Vacations (
 	id_Vacations int primary key identity (1,1) not null,
 	identification_card varchar(50) unique not null,
@@ -20,17 +21,17 @@ create table Vacations (
 	to_vacations date,
 	status_vacation BIT
 )
-
+go
 create table Payroll ( 
 	id int identity (1,1) primary key not null,
 	id_employee int foreign key references Employee(id),
 	date_payroll date default getDate(),
 	AFP decimal,
 	secure decimal,
-	commission decimal
+	net_income int
 )
 
-
+go
 create table job_history(
 	id_job_history int identity (1,1) primary key,
 	id_employee int,
@@ -41,34 +42,43 @@ create table job_history(
 	role_employee varchar(50)
 )	
 
-
+go
 create table admins (
 	id_admin int identity (1,1) primary key,
 	users varchar (50),
 	pass varchar(25)
 )
+go
 
 exec sp_vacationRequests
 
-create procedure sp_vacationRequests 
+--create procedure sp_vacationRequests 
 
-@identification_card varchar(50)
-as
+--@identification_card varchar(50)
+--as
 
-	begin
-	--if(@identification_card == '')
-	select  E.id, E.identification_card, E.name_employee, E.role_employee ,
-				E.phone_number , E.email , E.date_of_birth , E.hire_date
+--	begin
+--	--if(@identification_card == '')
+--	select  E.id, E.identification_card, E.name_employee, E.role_employee ,
+--				E.phone_number , E.email , E.date_of_birth , E.hire_date
 
-		from Employee E 
-		inner Join Vacations v on v.identification_card = E.identification_card
-		where E.identification_card = '0' 
-end
+--		from Employee E 
+--		inner Join Vacations v on v.identification_card = E.identification_card
+--		where E.identification_card = '0' 
+--end
 
 
 
 
 -- store procedure Payroll descuentos
+alter trigger add_To_Payroll
+on Employee 
+for insert
+as
+	INSERT INTO Payroll
+        (id_employee,date_payroll)
+    SELECT id, hire_date FROM inserted
+
 
 
 -- trigger Payrroll
@@ -77,7 +87,7 @@ on Employee
 for insert
 as
 	INSERT INTO Payroll
-        (id_employee, entry_date,name_employee, identification_card, role_employee )
+        (id_employee, identification_card)
     SELECT id,hire_date, name_employee, identification_card, role_employee FROM inserted
 --------------------------------------------------------------------------------------------------------
 
@@ -109,13 +119,15 @@ end
 
 -- trigger when delete employee se vaya to
 
-create trigger delete_Employee on Employee
+alter trigger delete_Employee on Employee
 
 after delete
 
 as
 
   begin
+
+  delete from Employee where identification_card in (select id from deleted)
 
   delete from Vacations where identification_card in (select identification_card from deleted)
 
@@ -133,19 +145,22 @@ select * from Payroll
 
 ----------------------------- Inserts --------------------------------------
 
-insert into Employee values('Juan','0','01/01/2000','programador','00100100001','juan@gmail.com','01/01/2020')
-insert into Employee values('Pedro','2','01/01/2001','frontend','00112333','pedro@gmail.com','01/01/2020')
+insert into Employee values('Juan','01','01/01/2000','programador','00100100001','juan@gmail.com','01/01/2020',100)
+insert into Employee values('Pedro','22','01/01/2001','frontend','00112333','pedro@gmail.com','01/01/2020',250)
 
-insert into Employee values('Isidro','3','01/01/2000','programador','00100100001','juan@gmail.com','01/01/2020')
-insert into Employee values('Pedro','4','01/01/2001','frontend','00112333','pedro@gmail.com','01/01/2020')
+insert into Employee values('Isidro','33','01/01/2000','programador','00100100001','juan@gmail.com','01/01/2020',450)
+insert into Employee values('Pedro','44','01/01/2001','frontend','00112333','pedro@gmail.com','01/01/2020',700)
 
 insert into Vacations values ('0','10/12/2021','10/10/2000',0)
 
 ------------------------ deletes -----------------------
 
-delete from Employee where id = 6
+delete from Employee where id = 1
+delete from Employee where id = 2
+delete from Employee where id = 3
+delete from Employee where id = 4
 delete from job_history 
-
+delete from Vacations where id_Vacations = 1
 
 
 ------------ drops -----------
