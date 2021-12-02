@@ -19,12 +19,12 @@ create table Vacations (
 	identification_card varchar(50) unique not null,
 	from_vacations date,
 	to_vacations date,
-	status_vacation BIT
+	status_vacation BIT default 0
 )
 go
 create table Payroll ( 
 	id int identity (1,1) primary key not null,
-	id_employee int foreign key references Employee(id),
+	id_employee int foreign key references Employee(id)on delete cascade,
 	date_payroll date default getDate(),
 	AFP decimal,
 	secure decimal,
@@ -68,16 +68,43 @@ exec sp_vacationRequests
 --end
 
 
-
-
 -- store procedure Payroll descuentos
-alter trigger add_To_Payroll
+CREATE PROCEDURE sp_payroll
+as
+begin
+	SELECT E.name_employee,E.identification_card,E.salary AS "Gross Salary",P.AFP,P.secure, P.net_income 
+	FROM Payroll AS P JOIN Employee AS E ON E.id=P.id_employee  
+end
+
+
+
+
+create trigger add_To_Payroll
 on Employee 
 for insert
 as
-	INSERT INTO Payroll
-        (id_employee,date_payroll)
-    SELECT id, hire_date FROM inserted
+	
+	declare @salary decimal
+	DECLARE @ID INT
+	declare @afp decimal
+	declare @secure decimal
+	declare @net_income decimal
+
+	select @ID=id, @salary = salary from inserted
+
+
+	set @afp = @salary * 0.05 
+	set @secure = @salary * 0.03 
+	set @net_income = @salary - @afp - @secure
+
+
+	--INSERT INTO Payroll
+ --       (id_employee,date_payroll, AFP, secure)
+ --   SELECT id, hire_date FROM inserted
+
+	INSERT INTO Payroll  (id_employee, AFP, secure, net_income) VALUES(@ID,@afp,@secure,@net_income)
+
+	
 
 
 
@@ -115,23 +142,21 @@ begin
 end
 
 
-----  
-
 -- trigger when delete employee se vaya to
 
 alter trigger delete_Employee on Employee
 
-after delete
+instead of delete
 
 as
 
   begin
 
-  delete from Employee where identification_card in (select id from deleted)
+  delete from Payroll where id_employee in (select identification_card from deleted)
 
   delete from Vacations where identification_card in (select identification_card from deleted)
 
-  delete from Payroll where id_employee in (select id from deleted)
+  delete from Employee where id in (select id from deleted)
 
   end
 
@@ -145,22 +170,22 @@ select * from Payroll
 
 ----------------------------- Inserts --------------------------------------
 
-insert into Employee values('Juan','01','01/01/2000','programador','00100100001','juan@gmail.com','01/01/2020',100)
-insert into Employee values('Pedro','22','01/01/2001','frontend','00112333','pedro@gmail.com','01/01/2020',250)
+insert into Employee values('Abel','01117234','01/01/2000','qa','001001','abel@gmail.com','01/01/2020',1000)
+insert into Employee values('Pedro','222','01/01/2001','frontend','00112333','pedro@gmail.com','01/01/2020',250)
 
 insert into Employee values('Isidro','33','01/01/2000','programador','00100100001','juan@gmail.com','01/01/2020',450)
-insert into Employee values('Pedro','44','01/01/2001','frontend','00112333','pedro@gmail.com','01/01/2020',700)
+insert into Employee values('Juanita','4423','01/01/2001','frontend','00112333','pedro@gmail.com','01/01/2020',60000)
 
-insert into Vacations values ('0','10/12/2021','10/10/2000',0)
+insert into Vacations values ('01117234','10/12/2021','10/10/2000',0)
 
 ------------------------ deletes -----------------------
 
-delete from Employee where id = 1
-delete from Employee where id = 2
+delete from Employee where id = 16
+delete from Employee where identification_card = 4423
 delete from Employee where id = 3
-delete from Employee where id = 4
-delete from job_history 
 delete from Vacations where id_Vacations = 1
+delete from job_history 
+delete from Vacations where identification_card = 22
 
 
 ------------ drops -----------
@@ -175,4 +200,9 @@ drop table admins
 drop trigger add_To_jobHistory_When;
 
 ------------- delete-------------
-delete from Employee where identification_card = '3'
+delete from Employee
+delete from Vacations 
+delete from Payroll 
+delete from job_history 
+
+truncate table Employee
