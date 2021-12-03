@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-// Code scaffolded by EF Core assumes nullable reference types (NRTs) are not used or disabled.
-// If you have enabled NRTs for your project, then un-comment the following line:
-// #nullable disable
+#nullable disable
 
 namespace Nomina_empleado.Models
 {
@@ -14,7 +12,7 @@ namespace Nomina_empleado.Models
         public DateTime? DatePayroll { get; set; }
         public decimal? Afp { get; set; }
         public decimal? Secure { get; set; }
-        public decimal? Commission { get; set; }
+        public int? NetIncome { get; set; }
 
         public virtual Employee IdEmployeeNavigation { get; set; }
     }

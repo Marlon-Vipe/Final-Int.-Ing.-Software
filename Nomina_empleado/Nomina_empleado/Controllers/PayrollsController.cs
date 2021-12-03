@@ -13,25 +13,25 @@ namespace Nomina_empleado.Controllers
     [ApiController]
     public class PayrollsController : ControllerBase
     {
-        private readonly Employee_ITLA_DBContext _context;
+        private readonly NOMINA_DBContext _context;
 
-        public PayrollsController(Employee_ITLA_DBContext context)
+        public PayrollsController(NOMINA_DBContext context)
         {
             _context = context;
         }
 
         // GET: api/Payrolls
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Payroll>>> GetPayroll()
+        public async Task<ActionResult<IEnumerable<Payroll>>> GetPayrolls()
         {
-            return await _context.Payroll.ToListAsync();
+            return await _context.Payrolls.ToListAsync();
         }
 
         // GET: api/Payrolls/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Payroll>> GetPayroll(int id)
         {
-            var payroll = await _context.Payroll.FindAsync(id);
+            var payroll = await _context.Payrolls.FindAsync(id);
 
             if (payroll == null)
             {
@@ -42,8 +42,7 @@ namespace Nomina_empleado.Controllers
         }
 
         // PUT: api/Payrolls/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutPayroll(int id, Payroll payroll)
         {
@@ -74,12 +73,11 @@ namespace Nomina_empleado.Controllers
         }
 
         // POST: api/Payrolls
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Payroll>> PostPayroll(Payroll payroll)
         {
-            _context.Payroll.Add(payroll);
+            _context.Payrolls.Add(payroll);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetPayroll", new { id = payroll.Id }, payroll);
@@ -87,23 +85,23 @@ namespace Nomina_empleado.Controllers
 
         // DELETE: api/Payrolls/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Payroll>> DeletePayroll(int id)
+        public async Task<IActionResult> DeletePayroll(int id)
         {
-            var payroll = await _context.Payroll.FindAsync(id);
+            var payroll = await _context.Payrolls.FindAsync(id);
             if (payroll == null)
             {
                 return NotFound();
             }
 
-            _context.Payroll.Remove(payroll);
+            _context.Payrolls.Remove(payroll);
             await _context.SaveChangesAsync();
 
-            return payroll;
+            return NoContent();
         }
 
         private bool PayrollExists(int id)
         {
-            return _context.Payroll.Any(e => e.Id == id);
+            return _context.Payrolls.Any(e => e.Id == id);
         }
     }
 }

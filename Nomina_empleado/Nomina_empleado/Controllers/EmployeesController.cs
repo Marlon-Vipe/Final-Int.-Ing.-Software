@@ -13,25 +13,25 @@ namespace Nomina_empleado.Controllers
     [ApiController]
     public class EmployeesController : ControllerBase
     {
-        private readonly Employee_ITLA_DBContext _context;
+        private readonly NOMINA_DBContext _context;
 
-        public EmployeesController(Employee_ITLA_DBContext context)
+        public EmployeesController(NOMINA_DBContext context)
         {
             _context = context;
         }
 
         // GET: api/Employees
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Employee>>> GetEmployee()
+        public async Task<ActionResult<IEnumerable<Employee>>> GetEmployees()
         {
-            return await _context.Employee.ToListAsync();
+            return await _context.Employees.ToListAsync();
         }
 
         // GET: api/Employees/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Employee>> GetEmployee(int id)
         {
-            var employee = await _context.Employee.FindAsync(id);
+            var employee = await _context.Employees.FindAsync(id);
 
             if (employee == null)
             {
@@ -42,8 +42,7 @@ namespace Nomina_empleado.Controllers
         }
 
         // PUT: api/Employees/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutEmployee(int id, Employee employee)
         {
@@ -74,12 +73,11 @@ namespace Nomina_empleado.Controllers
         }
 
         // POST: api/Employees
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Employee>> PostEmployee(Employee employee)
         {
-            _context.Employee.Add(employee);
+            _context.Employees.Add(employee);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetEmployee", new { id = employee.Id }, employee);
@@ -87,23 +85,23 @@ namespace Nomina_empleado.Controllers
 
         // DELETE: api/Employees/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Employee>> DeleteEmployee(int id)
+        public async Task<IActionResult> DeleteEmployee(int id)
         {
-            var employee = await _context.Employee.FindAsync(id);
+            var employee = await _context.Employees.FindAsync(id);
             if (employee == null)
             {
                 return NotFound();
             }
 
-            _context.Employee.Remove(employee);
+            _context.Employees.Remove(employee);
             await _context.SaveChangesAsync();
 
-            return employee;
+            return NoContent();
         }
 
         private bool EmployeeExists(int id)
         {
-            return _context.Employee.Any(e => e.Id == id);
+            return _context.Employees.Any(e => e.Id == id);
         }
     }
 }

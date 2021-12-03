@@ -13,46 +13,45 @@ namespace Nomina_empleado.Controllers
     [ApiController]
     public class VacationsController : ControllerBase
     {
-        private readonly Employee_ITLA_DBContext _context;
+        private readonly NOMINA_DBContext _context;
 
-        public VacationsController(Employee_ITLA_DBContext context)
+        public VacationsController(NOMINA_DBContext context)
         {
             _context = context;
         }
 
         // GET: api/Vacations
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Vacations>>> GetVacations()
+        public async Task<ActionResult<IEnumerable<Vacation>>> GetVacations()
         {
             return await _context.Vacations.ToListAsync();
         }
 
         // GET: api/Vacations/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Vacations>> GetVacations(int id)
+        public async Task<ActionResult<Vacation>> GetVacation(int id)
         {
-            var vacations = await _context.Vacations.FindAsync(id);
+            var vacation = await _context.Vacations.FindAsync(id);
 
-            if (vacations == null)
+            if (vacation == null)
             {
                 return NotFound();
             }
 
-            return vacations;
+            return vacation;
         }
 
         // PUT: api/Vacations/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutVacations(int id, Vacations vacations)
+        public async Task<IActionResult> PutVacation(int id, Vacation vacation)
         {
-            if (id != vacations.IdVacations)
+            if (id != vacation.IdVacations)
             {
                 return BadRequest();
             }
 
-            _context.Entry(vacations).State = EntityState.Modified;
+            _context.Entry(vacation).State = EntityState.Modified;
 
             try
             {
@@ -60,7 +59,7 @@ namespace Nomina_empleado.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!VacationsExists(id))
+                if (!VacationExists(id))
                 {
                     return NotFound();
                 }
@@ -74,34 +73,33 @@ namespace Nomina_empleado.Controllers
         }
 
         // POST: api/Vacations
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Vacations>> PostVacations(Vacations vacations)
+        public async Task<ActionResult<Vacation>> PostVacation(Vacation vacation)
         {
-            _context.Vacations.Add(vacations);
+            _context.Vacations.Add(vacation);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetVacations", new { id = vacations.IdVacations }, vacations);
+            return CreatedAtAction("GetVacation", new { id = vacation.IdVacations }, vacation);
         }
 
         // DELETE: api/Vacations/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Vacations>> DeleteVacations(int id)
+        public async Task<IActionResult> DeleteVacation(int id)
         {
-            var vacations = await _context.Vacations.FindAsync(id);
-            if (vacations == null)
+            var vacation = await _context.Vacations.FindAsync(id);
+            if (vacation == null)
             {
                 return NotFound();
             }
 
-            _context.Vacations.Remove(vacations);
+            _context.Vacations.Remove(vacation);
             await _context.SaveChangesAsync();
 
-            return vacations;
+            return NoContent();
         }
 
-        private bool VacationsExists(int id)
+        private bool VacationExists(int id)
         {
             return _context.Vacations.Any(e => e.IdVacations == id);
         }

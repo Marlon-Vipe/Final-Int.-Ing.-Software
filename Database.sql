@@ -109,13 +109,13 @@ as
 
 
 -- trigger Payrroll
-create trigger add_To_Payroll
-on Employee 
-for insert
-as
-	INSERT INTO Payroll
-        (id_employee, identification_card)
-    SELECT id,hire_date, name_employee, identification_card, role_employee FROM inserted
+--create trigger add_To_Payroll
+--on Employee 
+--for insert
+--as
+--	INSERT INTO Payroll
+--        (id_employee, identification_card)
+--    SELECT id,hire_date, name_employee, identification_card, role_employee FROM inserted
 --------------------------------------------------------------------------------------------------------
 
 -- trigger job history cuando se cree empleado agregue los datos al job_history menos el end_date).
@@ -144,7 +144,7 @@ end
 
 -- trigger when delete employee se vaya to
 
-alter trigger delete_Employee on Employee
+create trigger delete_Employee on Employee
 
 instead of delete
 

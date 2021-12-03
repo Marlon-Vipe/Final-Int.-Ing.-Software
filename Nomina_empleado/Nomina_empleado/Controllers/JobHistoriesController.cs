@@ -13,25 +13,25 @@ namespace Nomina_empleado.Controllers
     [ApiController]
     public class JobHistoriesController : ControllerBase
     {
-        private readonly Employee_ITLA_DBContext _context;
+        private readonly NOMINA_DBContext _context;
 
-        public JobHistoriesController(Employee_ITLA_DBContext context)
+        public JobHistoriesController(NOMINA_DBContext context)
         {
             _context = context;
         }
 
         // GET: api/JobHistories
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<JobHistory>>> GetJobHistory()
+        public async Task<ActionResult<IEnumerable<JobHistory>>> GetJobHistories()
         {
-            return await _context.JobHistory.ToListAsync();
+            return await _context.JobHistories.ToListAsync();
         }
 
         // GET: api/JobHistories/5
         [HttpGet("{id}")]
         public async Task<ActionResult<JobHistory>> GetJobHistory(int id)
         {
-            var jobHistory = await _context.JobHistory.FindAsync(id);
+            var jobHistory = await _context.JobHistories.FindAsync(id);
 
             if (jobHistory == null)
             {
@@ -42,8 +42,7 @@ namespace Nomina_empleado.Controllers
         }
 
         // PUT: api/JobHistories/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutJobHistory(int id, JobHistory jobHistory)
         {
@@ -74,12 +73,11 @@ namespace Nomina_empleado.Controllers
         }
 
         // POST: api/JobHistories
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<JobHistory>> PostJobHistory(JobHistory jobHistory)
         {
-            _context.JobHistory.Add(jobHistory);
+            _context.JobHistories.Add(jobHistory);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetJobHistory", new { id = jobHistory.IdJobHistory }, jobHistory);
@@ -87,23 +85,23 @@ namespace Nomina_empleado.Controllers
 
         // DELETE: api/JobHistories/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<JobHistory>> DeleteJobHistory(int id)
+        public async Task<IActionResult> DeleteJobHistory(int id)
         {
-            var jobHistory = await _context.JobHistory.FindAsync(id);
+            var jobHistory = await _context.JobHistories.FindAsync(id);
             if (jobHistory == null)
             {
                 return NotFound();
             }
 
-            _context.JobHistory.Remove(jobHistory);
+            _context.JobHistories.Remove(jobHistory);
             await _context.SaveChangesAsync();
 
-            return jobHistory;
+            return NoContent();
         }
 
         private bool JobHistoryExists(int id)
         {
-            return _context.JobHistory.Any(e => e.IdJobHistory == id);
+            return _context.JobHistories.Any(e => e.IdJobHistory == id);
         }
     }
 }

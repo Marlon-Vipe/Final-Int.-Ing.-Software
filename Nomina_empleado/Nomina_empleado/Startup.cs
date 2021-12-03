@@ -17,6 +17,7 @@ namespace Nomina_empleado
 {
     public class Startup
     {
+        readonly string Cors = "Cors";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -28,8 +29,20 @@ namespace Nomina_empleado
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddDbContext<Employee_ITLA_DBContext>(options => options.UseSqlServer
+            services.AddDbContext<NOMINA_DBContext>(options => options.UseSqlServer
             (Configuration.GetConnectionString("Conexion")));
+            services.AddCors(options => {
+                options.AddPolicy("Allowed", builder =>
+                {
+                    //builder.WithOrigins("https://localhost:44322/%22);
+                    builder.SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost").AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
+                    //builder.AllowAnyHeader().AllowAnyMethod();
+                });
+            });
+            //services.AddSwaggerGen(c =>
+            //{
+            //    c.SwaggerDoc("v1", new OpenApiInfo { Title = "AgendaContacto_API", Version = "v1" });
+            //});
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -38,12 +51,14 @@ namespace Nomina_empleado
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                //app.UseSwagger();
+                //app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "AgendaContacto_API v1"));
             }
-
+            
             app.UseHttpsRedirection();
 
             app.UseRouting();
-
+            app.UseCors("Allowed");
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
@@ -51,5 +66,7 @@ namespace Nomina_empleado
                 endpoints.MapControllers();
             });
         }
+
+
     }
 }
